@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
+    public static Action<Item> itemClicked;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -28,6 +30,13 @@ public class InputManager : MonoBehaviour
             return;
         }
 
+        if(!hitInfo.collider.TryGetComponent(out Item item))
+        {
+            return;
+        }
+
         Debug.Log($"Hit: {hitInfo.collider.name} at {hitInfo.point}");
+
+        itemClicked?.Invoke(item);
     }
 }
