@@ -27,7 +27,7 @@ public class Item : MonoBehaviour
 
     internal void DisableShadows()
     {
-
+        m_renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     }
 
     public void SelectItem(Material _outlineMaterial) 
