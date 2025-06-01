@@ -6,7 +6,11 @@ public class InputManager : MonoBehaviour
     public static Action<Item> itemClicked;
 
     [Header(" Settings ")]
+    [SerializeField] private Material m_outlineMaterial;
+
     private Item m_currentItem;
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -32,21 +36,43 @@ public class InputManager : MonoBehaviour
 
         if (hitInfo.collider == null)
         {
-            m_currentItem = null;
+            DeselectCurrentItem();
             return;
         }
 
-        if(!hitInfo.collider.TryGetComponent(out Item item))
+        if (hitInfo.collider.transform.parent == null)
         {
-            m_currentItem = null;
+            return;
+        }
+
+        if (!hitInfo.collider.transform.parent.TryGetComponent(out Item item))
+        {
+            DeselectCurrentItem();
             return;
         }
 
         Debug.Log($"Hit: {hitInfo.collider.name} at {hitInfo.point}");
 
-        m_currentItem = item;
+     
+        DeselectCurrentItem();
         
+
+        m_currentItem = item;
+        m_currentItem.SelectItem(m_outlineMaterial);
+
     }
+
+    private void DeselectCurrentItem()
+    {
+        if (m_currentItem != null)
+        {
+            m_currentItem.DeselectItem();
+        }
+
+        m_currentItem = null;
+    }
+
+
     private void HandleMouseUp()
     {
         if(m_currentItem == null)
@@ -54,7 +80,11 @@ public class InputManager : MonoBehaviour
             return;
         }
 
+        m_currentItem.DeselectItem();
+
         itemClicked?.Invoke(m_currentItem);
         m_currentItem = null;
     }
+
+
 }
