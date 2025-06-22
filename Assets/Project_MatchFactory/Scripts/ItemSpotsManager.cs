@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Progress;
 public class ItemSpotsManager : MonoBehaviour
 {
     [Header(" Elements ")]
@@ -80,7 +83,89 @@ public class ItemSpotsManager : MonoBehaviour
 
     private void HandleItemMergeDataFound(Item _item)
     {
+        ItemSpot idealSpot = GetIdealSpot(_item);
+
+        m_itemMergeDataDictionary[_item.ItemName].AddItem(_item);
+
+        TryMoveItemToIdealSpot(_item, idealSpot);
+    }
+
+    private ItemSpot GetIdealSpot(Item _item)
+    {
+        List<Item> items = m_itemMergeDataDictionary[_item.ItemName].Items;
+        List<ItemSpot> itemSpots = new List<ItemSpot>();
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            itemSpots.Add(items[i].ItemSpot);
+        }
+
+        if(itemSpots.Count >= 2) 
+        {
+            itemSpots.Sort((a, b) => b.transform.GetSiblingIndex().CompareTo(a.transform.GetSiblingIndex()));
+        }
+
+        int idealSpotIndex = itemSpots[0].transform.GetSiblingIndex() + 1;
+
+        return m_itemSpots[idealSpotIndex];
+    }
+
+    private void TryMoveItemToIdealSpot(Item _item, ItemSpot _idealSpot)
+    {
+        if (!_idealSpot.IsEmpty()) 
+        { 
+            HandleIdealSpotFull(_item, _idealSpot);
+            return;
+        }
+
+        MoveItemToSpot(_item, _idealSpot);
+    }
+
+    private void HandleIdealSpotFull(Item item, ItemSpot idealSpot)
+    {
         throw new NotImplementedException();
+    }
+
+    private void MoveItemToSpot(Item _item, ItemSpot _targetSpot)
+    {
+        _targetSpot.Populate(_item);
+
+        _item.transform.localPosition = m_itemLocalPositionOnSpot;
+        _item.transform.localScale = m_itemLocalScaleOnSpot;
+        _item.transform.localRotation = Quaternion.identity;
+
+        _item.DisableShadows();
+        _item.DisablePhysics();
+
+        HandleItemReachedSpot(_item);
+    }
+
+    private void HandleItemReachedSpot(Item _item)
+    {
+        if (m_itemMergeDataDictionary[_item.ItemName].CanMergeItems()) 
+        {
+            MergeItems(m_itemMergeDataDictionary[_item.ItemName]);
+        }
+        else
+        {
+            CheckForGameOver();
+        }
+    }
+
+    private void MergeItems(ItemMergeData _itemMergeData)
+    {
+        List<Item> items = _itemMergeData.Items;
+
+        m_itemMergeDataDictionary.Remove(_itemMergeData.ItemName);
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            items[i].ItemSpot.ClearSpot();
+            Destroy(items[i].gameObject);
+        }
+
+        m_isBusy = false;
+
     }
 
     private void MoveItemToFirstFreeSpot(Item _item)
@@ -130,7 +215,6 @@ public class ItemSpotsManager : MonoBehaviour
     private void CreateItemMergeData(Item _item)
     {
         m_itemMergeDataDictionary.Add(_item.ItemName, new ItemMergeData(_item));
-        Debug.Log($"Item merge data created for item: {_item.name}. Total items: {m_itemMergeDataDictionary.Count}");
     }
 
     private ItemSpot GetFreeSpot()

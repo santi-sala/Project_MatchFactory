@@ -7,6 +7,9 @@ public class Item : MonoBehaviour
     [Header("Data")]
     [SerializeField] private EItemName m_itemName;
     public EItemName ItemName => m_itemName;
+    private ItemSpot m_itemSpot;
+    public ItemSpot ItemSpot => m_itemSpot;
+
 
     [Header("Elements")]
     [SerializeField] private Renderer m_renderer;
@@ -23,6 +26,11 @@ public class Item : MonoBehaviour
 
         m_baseMaterial = m_renderer.material;
     }
+
+    public void AssignSpot(ItemSpot _spot) 
+    { 
+        this.m_itemSpot = _spot;
+    } 
     internal void DisablePhysics()
     {
         GetComponent<Rigidbody>().isKinematic = true;

@@ -20,8 +20,15 @@ public class ItemSpot : MonoBehaviour
     {
         m_item = _item;
         _item.transform.SetParent(transform);
+
+        _item.AssignSpot(this);
     }
-    
+
+    public void ClearSpot()
+    {
+        m_item = null;
+    }
+
     public bool IsEmpty() 
     { 
         return m_item == null;
