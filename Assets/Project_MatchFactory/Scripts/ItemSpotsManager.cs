@@ -1,7 +1,6 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
-
 public class ItemSpotsManager : MonoBehaviour
 {
     [Header(" Elements ")]
@@ -11,6 +10,10 @@ public class ItemSpotsManager : MonoBehaviour
     [Header(" Settings ")]
     [SerializeField] private Vector3 m_itemLocalPositionOnSpot;
     [SerializeField] private Vector3 m_itemLocalScaleOnSpot;
+    private bool m_isBusy;
+
+    [Header(" Data ")]
+    private Dictionary<EItemName, ItemMergeData> m_itemMergeDataDictionary = new Dictionary<EItemName, ItemMergeData>();
 
 
     private void Awake()
@@ -37,13 +40,21 @@ public class ItemSpotsManager : MonoBehaviour
     }
     private void OnItemClicked(Item _item)
     {
+        if (m_isBusy)
+        {
+            Debug.LogWarning("ItemSpotsManager is busy, ignoring item click.");
+            return;
+        }
+
         if (!FreeSpotAvailable())
         {
             Debug.LogError("No free spot available for the item! GAME OVER!");
             return;
         }
 
-        HandleIemClicked(_item);
+        m_isBusy = true;
+
+        HandleItemClicked(_item);
 
         // Turn the item as a child of the item spot
         //
@@ -55,9 +66,21 @@ public class ItemSpotsManager : MonoBehaviour
 
     }
 
-    private void HandleIemClicked(Item _item)
+    private void HandleItemClicked(Item _item)
     {
-        MoveItemToFirstFreeSpot(_item);
+        if(m_itemMergeDataDictionary.ContainsKey(_item.ItemName))
+        {
+            HandleItemMergeDataFound(_item);
+        }
+        else
+        {
+            MoveItemToFirstFreeSpot(_item);
+        }
+    }
+
+    private void HandleItemMergeDataFound(Item _item)
+    {
+        throw new NotImplementedException();
     }
 
     private void MoveItemToFirstFreeSpot(Item _item)
@@ -70,7 +93,9 @@ public class ItemSpotsManager : MonoBehaviour
             return;
         }
 
-       targetSpot.Populate(_item);
+        CreateItemMergeData(_item);
+
+        targetSpot.Populate(_item);
 
         _item.transform.localPosition = m_itemLocalPositionOnSpot;
         _item.transform.localScale = m_itemLocalScaleOnSpot;
@@ -82,7 +107,30 @@ public class ItemSpotsManager : MonoBehaviour
         
         _item.DisablePhysics();
 
+        HandleFirstItemReachSpot(_item);
+    }
 
+    private void HandleFirstItemReachSpot(Item _item)
+    {
+        CheckForGameOver();
+    }
+
+    private void CheckForGameOver()
+    {
+        if(GetFreeSpot() == null) 
+        {
+            Debug.LogError("Game Over!!");
+        }
+        else
+        {
+            m_isBusy = false;
+        }
+    }
+
+    private void CreateItemMergeData(Item _item)
+    {
+        m_itemMergeDataDictionary.Add(_item.ItemName, new ItemMergeData(_item));
+        Debug.Log($"Item merge data created for item: {_item.name}. Total items: {m_itemMergeDataDictionary.Count}");
     }
 
     private ItemSpot GetFreeSpot()

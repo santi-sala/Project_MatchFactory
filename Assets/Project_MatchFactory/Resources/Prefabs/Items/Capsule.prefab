@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8504292439725576134}
   - component: {fileID: 4686552594680964359}
   m_Layer: 0
-  m_Name: Cylinder
+  m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,9 +73,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fd29ffbf7fe6b440a803ab7c5cc1313, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_itemName: 2
+  m_itemName: 3
   m_renderer: {fileID: 4698923891616878890}
-  m_collider: {fileID: 4577450043188996592}
+  m_collider: {fileID: 4178322426863152696}
 --- !u!1 &9185763831655817119
 GameObject:
   m_ObjectHideFlags: 0
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 7937874323201602236}
   - component: {fileID: 5073976070622009391}
   - component: {fileID: 4698923891616878890}
-  - component: {fileID: 4577450043188996592}
+  - component: {fileID: 4178322426863152696}
   m_Layer: 0
   m_Name: Renderer
   m_TagString: Untagged
@@ -117,7 +117,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9185763831655817119}
-  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &4698923891616878890
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -141,7 +141,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8fbc86bbc953bdc49a2c711899e2d802, type: 2}
+  - {fileID: 2100000, guid: 2a35f1f01bd0adc459cbb1a323795aff, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -163,8 +163,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4577450043188996592
-MeshCollider:
+--- !u!136 &4178322426863152696
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -181,7 +181,8 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+  serializedVersion: 2
+  m_Radius: 0.50000024
+  m_Height: 2.0000005
+  m_Direction: 1
+  m_Center: {x: 0.000000059604645, y: 0.00000023841858, z: -0.00000032782557}

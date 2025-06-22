@@ -4,6 +4,10 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Item : MonoBehaviour
 {
+    [Header("Data")]
+    [SerializeField] private EItemName m_itemName;
+    public EItemName ItemName => m_itemName;
+
     [Header("Elements")]
     [SerializeField] private Renderer m_renderer;
     [SerializeField] private Collider m_collider;
